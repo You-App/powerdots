@@ -7,28 +7,45 @@
   <style>
     body{
       background-color: rgb(255, 255, 255);
+      overflow: hidden;
     }
     canvas{
       background-color:aliceblue;
       user-select: none;
+      max-height: 100vh;
+      max-width: 100vw;
     }
   </style>
 </head>
 <body>
   <canvas id="tutorial" width="640" height="640"></canvas>
   <script>
-    var canvas = document.getElementById('tutorial');
-    var ctx = canvas.getContext('2d');
-
 
     var moveX, moveY;
     var diffX, diffY;
     var velX = 0, velY = 0;
     var clickX=-100, clickY=-100;
     var dirX=-100, dirY = -100;
+    var mapSize=1000;
 
     var size=30;
+    var points=[      
+    ];
 
+
+    var canvas = document.getElementById('tutorial');
+    canvas.setAttribute("width",mapSize);
+    canvas.setAttribute("height",mapSize);
+    var ctx = canvas.getContext('2d');
+
+
+    function point(x0,y0,radius,color){
+      points.push({x:x0,y:y0,r:radius, color:color, visible:true});
+    }
+
+    function dist(x0,y0,x1,y1){
+      return Math.sqrt((x0-x1)*(x0-x1)+(y0-y1)*(y0-y1));
+    }
 
 
     function ellipse(x,y,ancho,alto,bgcolor){
@@ -65,6 +82,13 @@
     }
 
 
+    window.addEventListener("mousedown",function(ev){
+      //console.log("start",ev.touches[0].pageX,ev.touches[0].pageY);
+      clickX=ev.pageX;
+      clickY=ev.pageY;
+    })
+
+
     window.addEventListener("touchstart",function(ev){
       //console.log("start",ev.touches[0].pageX,ev.touches[0].pageY);
       clickX=ev.touches[0].pageX;
@@ -83,6 +107,20 @@
       velY=Math.min(5,diffY/100);
     })
 
+    window.addEventListener("mousemove",function(ev){
+      if (clickX<0){
+        return;
+      }
+      //console.log("move",ev.touches[0].pageX,ev.touches[0].pageY);
+      moveX=ev.pageX;
+      moveY=ev.pageY;
+      console.log(diffX=moveX-clickX, diffY=moveY-clickY);
+      dirX=clickX+Math.max(-60,Math.min(60,diffX));
+      dirY=clickY+Math.max(-60,Math.min(60,diffY));
+      velX=Math.min(5,diffX/100);
+      velY=Math.min(5,diffY/100);
+    })
+
     window.addEventListener("touchend",function(ev){
       //console.log("start",ev.touches[0].pageX,ev.touches[0].pageY);
       clickX=-100;
@@ -91,11 +129,22 @@
       dirY=-100;
     })
 
-    
-    var posX=random(size,640-size); 
-    var posY=random(size,640-size);
-    console.log(posX,posY);
+    window.addEventListener("mouseup",function(ev){
+      //console.log("start",ev.touches[0].pageX,ev.touches[0].pageY);
+      clickX=-100;
+      clickY=-100;
+      dirX=-100;
+      dirY=-100;
+    })
 
+    
+    var posX=random(size,mapSize-size); 
+    var posY=random(size,mapSize-size);
+
+    for(var i=0;i<20;i++){
+      point(random(size,mapSize-size),random(size,mapSize-size),5,"green");
+      point(random(size,mapSize-size),random(size,mapSize-size),10,"blue");
+    }    
 
     function start(){
 
@@ -105,18 +154,34 @@
       if (posX<size){
        posX=size;
       }
-      if (posX>640-size){
-        posX=640-size
+      if (posX>mapSize-size){
+        posX=mapSize-size
       }
       if (posY<size){
        posY=size;
       }
-      if (posY>640-size){
-        posY=640-size
+      if (posY>mapSize-size){
+        posY=mapSize-size
       }
       borrar(0,0,1000,1000);
 
+      for(var i=0; i<points.length; i++){
+        var pt=points[i];
+        var d=dist(posX,posY,pt.x,pt.y);
+        if (d<=size && pt.visible){
+          pt.visible=false;
+          size=Math.min(mapSize,size+pt.r/10);
+        }
+        if (pt.visible){
+          ellipse(pt.x,pt.y, pt.r, pt.r, pt.color);
+        }
+      }
+
       ellipse(posX,posY, size,size, "red");
+      ctx.fillStyle="white";
+      ctx.font=size+"px Arial";
+      ctx.textAlign="center";
+      ctx.fillText(Math.round(size),posX,posY);
 
       ellipse(clickX,clickY, 100,100, "rgba(0,0,0,0.2)");
       ellipse(dirX,dirY, 40,40, "rgba(128,128,128,0.6)");
@@ -125,6 +190,10 @@
     
 
     setInterval(start,40);
+    setInterval(function(){
+      point(random(size,mapSize-size),random(size,mapSize-size),5,"green");
+      point(random(size,mapSize-size),random(size,mapSize-size),10,"blue");
+    },1000);
     
 
     
