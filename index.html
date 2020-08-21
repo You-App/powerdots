@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Powerdots</title>
+  <style>
+    body{
+      background-color: rgb(255, 255, 255);
+    }
+    canvas{
+      background-color:aliceblue;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="tutorial" width="640" height="640"></canvas>
+  <script>
+    var canvas = document.getElementById('tutorial');
+    var ctx = canvas.getContext('2d');
+
+
+    var moveX, moveY;
+    var diffX, diffY;
+    var velX = 0, velY = 0;
+    var clickX=-100, clickY=-100;
+    var dirX=-100, dirY = -100;
+
+    var size=30;
+
+
+
+    function ellipse(x,y,ancho,alto,bgcolor){
+      ctx.fillStyle=bgcolor;
+      ctx.beginPath();
+      ctx.ellipse(
+        x,y, //x,y
+        ancho,alto,  // ancho, alto
+        0, // rotacion
+        0, Math.PI*2, // angulo inicio y fin
+        true); 
+      ctx.fill();
+    }
+
+    function triamgulo(x1,y1, x2,y2, x3,y3){
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2,y2);
+      ctx.lineTo(x3,y3);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function rectangulo(x,y,ancho,alto){
+      ctx.fillRect (x, y, ancho, alto);
+    }
+
+    function borrar(x,y,ancho,alto){
+      ctx.clearRect(x,y,ancho,alto);
+    }
+
+    function random(min,max){
+      return Math.random() * (max - min) + min;
+    }
+
+
+    window.addEventListener("touchstart",function(ev){
+      //console.log("start",ev.touches[0].pageX,ev.touches[0].pageY);
+      clickX=ev.touches[0].pageX;
+      clickY=ev.touches[0].pageY;
+    })
+
+    
+    window.addEventListener("touchmove",function(ev){
+      //console.log("move",ev.touches[0].pageX,ev.touches[0].pageY);
+      moveX=ev.touches[0].pageX;
+      moveY=ev.touches[0].pageY;
+      console.log(diffX=moveX-clickX, diffY=moveY-clickY);
+      dirX=clickX+Math.max(-60,Math.min(60,diffX));
+      dirY=clickY+Math.max(-60,Math.min(60,diffY));
+      velX=Math.min(5,diffX/100);
+      velY=Math.min(5,diffY/100);
+    })
+
+    window.addEventListener("touchend",function(ev){
+      //console.log("start",ev.touches[0].pageX,ev.touches[0].pageY);
+      clickX=-100;
+      clickY=-100;
+      dirX=-100;
+      dirY=-100;
+    })
+
+    
+    var posX=random(size,640-size); 
+    var posY=random(size,640-size);
+    console.log(posX,posY);
+
+
+    function start(){
+
+      
+      posX=posX+velX;
+      posY=posY+velY;
+      if (posX<size){
+       posX=size;
+      }
+      if (posX>640-size){
+        posX=640-size
+      }
+      if (posY<size){
+       posY=size;
+      }
+      if (posY>640-size){
+        posY=640-size
+      }
+      borrar(0,0,1000,1000);
+
+      ellipse(posX,posY, size,size, "red");
+
+      ellipse(clickX,clickY, 100,100, "rgba(0,0,0,0.2)");
+      ellipse(dirX,dirY, 40,40, "rgba(128,128,128,0.6)");
+      
+    } 
+    
+
+    setInterval(start,40);
+    
+
+    
+  </script>
+</body>
+</html>
