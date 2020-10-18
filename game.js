@@ -190,7 +190,7 @@ window.addEventListener("mousemove", function (ev) {
     //console.log("move",ev.touches[0].pageX,ev.touches[0].pageY);
     moveX = ev.pageX;
     moveY = ev.pageY;
-    //console.log(diffX = moveX - clickX, diffY = moveY - clickY);
+    diffX = moveX - clickX, diffY = moveY - clickY;
     players[0].dirX = clickX + Math.max(-60, Math.min(60, diffX));
     players[0].dirY = clickY + Math.max(-60, Math.min(60, diffY));
     players[0].velX = Math.min(10, diffX / 100);
