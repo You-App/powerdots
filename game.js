@@ -160,6 +160,41 @@ window.addEventListener("mousedown", function (ev) {
     }
 })
 
+var lastKeyDown={};
+
+window.addEventListener("keydown",function(ev){
+    if (!lastKeyDown[ev.keyCode]){
+        lastKeyDown[ev.keyCode]=0;
+    }
+    lastKeyDown[ev.keyCode]++;
+    players[0].dirX=1;
+    players[0].velX=0;
+    players[0].dirY=1;
+    players[0].velY=0;
+    if (lastKeyDown[40]>0){
+        players[0].dirY=-1;
+        players[0].velY=3.5;
+    }
+    if (lastKeyDown[38]>0){
+        players[0].dirY=1;
+        players[0].velY=-3.5;
+    }
+    if (lastKeyDown[39]>0){
+        players[0].dirX=1;
+        players[0].velX=3.5;
+    }
+    if (lastKeyDown[37]>0){
+        players[0].dirX=1;
+        players[0].velX=-3.5;
+    }
+    console.log("kdown",ev.keyCode,lastKeyDown);
+})
+
+window.addEventListener("keyup",function(ev){
+    lastKeyDown[ev.keyCode]=0;
+    console.log("kup",ev.keyCode,lastKeyDown);
+})
+
 
 window.addEventListener("touchstart", function (ev) {
     //console.log("start",ev.touches[0].pageX,ev.touches[0].pageY);
